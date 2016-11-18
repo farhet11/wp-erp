@@ -41,6 +41,7 @@ function erp_map_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = ar
  */
 function erp_get_currencies() {
     return array_unique( apply_filters( 'erp_currencies', array(
+        'MAD' => __( 'Kingdom of Morocco Dirham', 'erp' ),
         'AED' => __( 'United Arab Emirates Dirham', 'erp' ),
         'AUD' => __( 'Australian Dollars', 'erp' ),
         'AZD' => __( 'Argentine Peso', 'erp' ),
@@ -50,7 +51,6 @@ function erp_get_currencies() {
         'CAD' => __( 'Canadian Dollars', 'erp' ),
         'CLP' => __( 'Chilean Peso', 'erp' ),
         'CNY' => __( 'Chinese Yuan', 'erp' ),
-        'COP' => __( 'Colombian Peso', 'erp' ),
         'CZK' => __( 'Czech Koruna', 'erp' ),
         'DKK' => __( 'Danish Krone', 'erp' ),
         'DOP' => __( 'Dominican Peso', 'erp' ),
@@ -150,6 +150,7 @@ function erp_get_currency() {
 function erp_get_currency_symbol( $currency = '' ) {
 
     switch ( $currency ) {
+        case 'MAD' : $currency_symbol = 'د.م'; break;
         case 'AED' : $currency_symbol = 'د.إ'; break;
         case 'BDT' : $currency_symbol = '&#2547;'; break;
         case 'BRL' : $currency_symbol = '&#82;&#36;'; break;
@@ -983,9 +984,8 @@ function erp_get_import_export_fields() {
  */
 function erp_import_export_javascript() {
     global $current_screen;
-    $hook = str_replace( sanitize_title( __( 'ERP Settings', 'erp' ) ) , 'erp-settings', $current_screen->base );
 
-    if ( 'erp-settings_page_erp-tools' !== $hook ) {
+    if ( 'erp-settings_page_erp-tools' !== $current_screen->base ) {
         return;
     }
 
@@ -1860,41 +1860,4 @@ function erp_import_export_download_sample_action() {
     }
 
     return;
-}
-
-/**
- * Enqueue locale scripts for fullcalendar
- *
- * @since 1.0.0
- *
- * @return void
- */
-function enqueue_fullcalendar_locale() {
-    $locale = get_locale();
-    $script = '';
-
-    // no need to add locale for en_US
-    if ( 'en_US' === $locale ) {
-        return;
-    }
-
-    $locale = explode( '_', $locale );
-
-    // make sure we have two segments - 1.lang, 2.country
-    if ( count( $locale ) < 2 ) {
-        return;
-    }
-
-    $lang = $locale[0];
-    $country = strtolower( $locale[1] );
-
-    if ( $lang === $country ) {
-        $script = $lang;
-    } else {
-        $script = $lang . '-' . $country;
-    }
-
-    if ( file_exists( WPERP_PATH . "/assets/vendor/fullcalendar/lang/{$script}.js" ) ) {
-        wp_enqueue_script( 'erp-fullcalendar-locale', WPERP_ASSETS . "/vendor/fullcalendar/lang/{$script}.js", array( 'erp-fullcalendar' ), null, true );
-    }
 }
